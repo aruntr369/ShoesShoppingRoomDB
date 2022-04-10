@@ -19,7 +19,7 @@ import com.arun.shoesshoppingroomdb.viewmodel.CartViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ShoeItemAdapter.ShoeClickedListeners {
+public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private List<ShoeItem> shoeItemList;
@@ -64,14 +64,15 @@ public class MainActivity extends AppCompatActivity implements ShoeItemAdapter.S
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
-        adapter = new ShoeItemAdapter(this);
+        adapter = new ShoeItemAdapter(new ShoeItemAdapter.ShoeClickedListeners() {
+            @Override
+            public void onCardClicked(ShoeItem shoe) {
+                Intent intent = new Intent(MainActivity.this,DetailedActivity.class);
+                intent.putExtra("shoeItem",shoe);
+                startActivity(intent);
+            }
+        });
 
     }
 
-    @Override
-    public void onCardClicked(ShoeItem shoe) {
-        Intent intent = new Intent(MainActivity.this,DetailedActivity.class);
-        intent.putExtra("shoeItem",shoe);
-        startActivity(intent);
-    }
 }
