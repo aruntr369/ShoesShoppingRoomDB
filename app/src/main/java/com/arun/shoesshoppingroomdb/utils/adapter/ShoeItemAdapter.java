@@ -43,13 +43,19 @@ public class ShoeItemAdapter extends RecyclerView.Adapter<ShoeItemAdapter.ShoeIt
         ShoeItem shoeItem = shoeItemList.get(position);
         holder.shoeNameTv.setText(shoeItem.getShoeName());
         holder.shoeBrandNameTv.setText(shoeItem.getShoeBrandName());
-        holder.shoePriceTv.setText(String.valueOf(shoeItem.getShoePrice()));
+        holder.shoePriceTv.setText("$"+String.valueOf(shoeItem.getShoePrice()));
         holder.shoeImageView.setImageResource(shoeItem.getShoeImage());
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 shoeClickedListeners.onCardClicked(shoeItem);
+            }
+        });
+        holder.addToCartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shoeClickedListeners.onAddToCartBtnClicked(shoeItem);
             }
         });
     }
@@ -79,6 +85,8 @@ public class ShoeItemAdapter extends RecyclerView.Adapter<ShoeItemAdapter.ShoeIt
     }
     public interface ShoeClickedListeners{
         void onCardClicked(ShoeItem shoe);
+        void onAddToCartBtnClicked(ShoeItem shoeItem);
+
     }
 
 }

@@ -2,12 +2,15 @@ package com.arun.shoesshoppingroomdb.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.arun.shoesshoppingroomdb.R;
@@ -15,6 +18,7 @@ import com.arun.shoesshoppingroomdb.utils.adapter.ShoeItemAdapter;
 import com.arun.shoesshoppingroomdb.utils.model.ShoeCart;
 import com.arun.shoesshoppingroomdb.utils.model.ShoeItem;
 import com.arun.shoesshoppingroomdb.viewmodel.CartViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +43,23 @@ public class MainActivity extends AppCompatActivity {
 
         adapter.setShoeItemList(shoeItemList);
         recyclerView.setAdapter(adapter);
+
+        viewModel.getAllCartItems().observe(this, new Observer<List<ShoeCart>>() {
+            @Override
+            public void onChanged(List<ShoeCart> shoeCarts) {
+                shoeCartList.addAll(shoeCarts);
+            }
+        });
+
+        cartImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, CartActivity.class));
+            }
+        });
+
     }
+
 
     private void setUpList() {
         shoeItemList.add(new ShoeItem("Nike Revolution", "Nike", R.drawable.nike_revolution_road, 15));
@@ -71,8 +91,53 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("shoeItem",shoe);
                 startActivity(intent);
             }
+
+            @Override
+            public void onAddToCartBtnClicked(ShoeItem shoeItem) {
+
+                ShoeCart shoeCart = new ShoeCart();
+                shoeCart.setShoeName(shoeItem.getShoeName());
+                shoeCart.setShoeBrandName(shoeItem.getShoeBrandName());
+                shoeCart.setShoePrice(shoeItem.getShoePrice());
+                shoeCart.setShoeImage(shoeItem.getShoeImage());
+//                viewModel.insertCartItem(shoeCart);
+
+                final int[] quantity = {1};
+                final int[] id = new int[1];
+
+                if (!shoeCartList.isEmpty()) {
+                    for (int i = 0; i < shoeCartList.size(); i++) {
+                        if (shoeCart.getShoeName().equals(shoeCartList.get(i).getShoeName())) {
+                            quantity[0] = shoeCartList.get(i).getQuantity();
+                            quantity[0]++;
+                            id[0] = shoeCartList.get(i).getId();
+                        }
+                    }
+                }
+
+                Log.d("TAG", "onAddToCartBtnClicked: " + quantity[0]);
+            //fresh item
+                if (quantity[0] == 1) {
+                    shoeCart.setQuantity(quantity[0]);
+                    shoeCart.setTotalItemPrice(quantity[0] * shoeCart.getShoePrice());
+                    viewModel.insertCartItem(shoeCart);
+                } else {
+                    viewModel.updateQuantity(id[0], quantity[0]);
+                    viewModel.updatePrice(id[0], quantity[0] * shoeCart.getShoePrice());
+                }
+                makeSnackBar("Item Added To Cart");
+            }
         });
 
+    }
+    private void makeSnackBar(String msg) {
+        Snackbar.make(coordinatorLayout, msg, Snackbar.LENGTH_SHORT)
+                .setAction("Go to Cart", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(MainActivity.this, CartActivity.class));
+                    }
+                }).show();
     }
 
 }

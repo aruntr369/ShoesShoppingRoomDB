@@ -20,7 +20,7 @@ public class CartViewModel extends AndroidViewModel {
         cartRepo = new CartRepo(application);
     }
 
-    public LiveData<List<ShoeCart>> getShoeListMutableLiveData(){
+    public LiveData<List<ShoeCart>> getAllCartItems() {
         return cartRepo.getAllCartItemsLiveData();
     }
 
