@@ -44,12 +44,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.setShoeItemList(shoeItemList);
         recyclerView.setAdapter(adapter);
 
-        viewModel.getAllCartItems().observe(this, new Observer<List<ShoeCart>>() {
-            @Override
-            public void onChanged(List<ShoeCart> shoeCarts) {
-                shoeCartList.addAll(shoeCarts);
-            }
-        });
+
 
         cartImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +54,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        viewModel.getAllCartItems().observe(this, new Observer<List<ShoeCart>>() {
+            @Override
+            public void onChanged(List<ShoeCart> shoeCarts) {
+                shoeCartList.addAll(shoeCarts);
+            }
+        });
+    }
 
     private void setUpList() {
         shoeItemList.add(new ShoeItem("Nike Revolution", "Nike", R.drawable.nike_revolution_road, 15));

@@ -41,7 +41,7 @@ public class CartViewModel extends AndroidViewModel {
         cartRepo.updatePrice(id , price);
     }
 
-    public void deleteAllItems(){
+    public void deleteAllCartItems(){
         cartRepo.deleteAllItems();
     }
 }
